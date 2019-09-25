@@ -39,7 +39,7 @@ Thank you.
 '''
 
 # Configuration
-VERSION="0.0.9.6"
+VERSION="0.0.9.8"
 SWHOMEPAGE="https://github.com/ValdikSS/blockcheck"
 SWUSERAGENT="Blockcheck/" + VERSION + " " + SWHOMEPAGE
 
@@ -70,10 +70,10 @@ http_list = {
         {'status': 200, 'lookfor': 'PoniBooru', 'ip': '104.28.10.65', 'ipv6': '2400:cb00:2048:1::681c:a41'},
 
     'http://furry.booru.org/':
-        {'status': 200, 'lookfor': 'FurryBooru', 'ip': '5.178.68.73', 'ipv6': '2a00:1ca8:ae::10'},
+        {'status': 200, 'lookfor': 'FurryBooru', 'ip': '104.31.10.182', 'ipv6': '2606:4700:31::681f:ab6'},
 
     'http://furry.booru.org/index.php?page=post&s=view&id=111173':
-        {'status': 200, 'lookfor': 'FurryBooru', 'ip': '5.178.68.73', 'ipv6': '2a00:1ca8:ae::10'},
+        {'status': 200, 'lookfor': 'FurryBooru', 'ip': '104.31.10.182', 'ipv6': '2606:4700:31::681f:ab6'},
 
     'http://rutracker.org/forum/index.php':
         {'status': 200, 'lookfor': 'groupcp.php"', 'ip': '195.82.146.214', 'ipv6': '2a02:4680:22::214'},
@@ -93,7 +93,7 @@ dpi_list =   {
     {'host': 'rutracker.org', 'urn': '/forum/index.php',
         'lookfor': 'groupcp.php"', 'ip': '195.82.146.214', 'ipv6': '2a02:4680:22::214'},
     'pbooru.com':
-    {'host': 'pbooru.com', 'urn': '/index.php?page=post&s=view&id=303026',
+    {'host': 'pbooru.com', 'urn': '/index.php?page=post&s=view&id=304688',
         'lookfor': 'Related Posts', 'ip': '104.28.10.65', 'ipv6': '2400:cb00:2048:1::681c:a41'},
 }
 
@@ -362,6 +362,8 @@ def _get_url(url, proxy=None, ip=None, headers=False, follow_redirects=True):
         print_debug("_get_url: late socket exception", repr(e))
         if 'CERTIFICATE_VERIFY_FAILED' in str(e):
             return (-1, '')
+        if type(e) is urllib.error.HTTPError:
+            return(e.code, '')
         return (0, '')
     except (KeyboardInterrupt, SystemExit) as e:
         # re-raise exception to send it to caller function
@@ -784,7 +786,7 @@ def test_https_cert():
         if result[0] == -1:
             print("[☠] Сертификат подменяется")
             siteresults.append(False)
-        elif result[0] < 200:
+        elif result[0] == 0:
             print("[☠] Сайт не открывается")
             if check_isup(site):
                 siteresults.append('no')
